@@ -1,7 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { updateSheet } from "@/lib/googleSheets";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { offers } from "@/config/offers";
 
 const calculateProbability = async () => {
@@ -15,10 +15,11 @@ const calculateProbability = async () => {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const entryId = body.entryId;
-    const selectedDiscount = body.selectedDiscount;
+    const entryId = body?.entryId;
+    const selectedDiscount = body?.selectedDiscount;
 
     if (!entryId) {
+      console.error("Missing entryId in request body");
       return NextResponse.json(
         { error: "Entry ID is required" },
         { status: 400 },
@@ -30,6 +31,7 @@ export async function POST(request: Request) {
     });
 
     if (!entry) {
+      console.error(`Entry not found for id: ${entryId}`);
       return NextResponse.json({ error: "Entry not found" }, { status: 404 });
     }
 
@@ -64,6 +66,14 @@ export async function POST(request: Request) {
         date: formattedDate,
       }),
     ]);
+
+    if (!updatedEntry || !updatedEntry.gift) {
+      console.error("Failed to update entry or gift is undefined");
+      return NextResponse.json(
+        { error: "Failed to update entry" },
+        { status: 500 },
+      );
+    }
 
     return NextResponse.json({ gift: updatedEntry.gift });
   } catch (error) {
