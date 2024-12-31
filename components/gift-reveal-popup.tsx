@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
 import React, { useState, useEffect, useMemo } from "react";
@@ -20,6 +18,7 @@ interface GiftRevealPopupProps {
 
 const GiftRevealPopup: React.FC<GiftRevealPopupProps> = ({
   gift,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   permanent = false,
   position = { x: 0.5, y: 0.6 },
 }) => {
@@ -34,7 +33,8 @@ const GiftRevealPopup: React.FC<GiftRevealPopupProps> = ({
     });
   }, [position]);
 
-  const amount = gift.replace("₹", "");
+  // Safely handle the gift amount
+  const amount = gift ? gift.replace(/[₹]/g, "") : "";
 
   return useMemo(
     () => (
@@ -84,8 +84,8 @@ const GiftRevealPopup: React.FC<GiftRevealPopupProps> = ({
                   className="space-y-4"
                 >
                   <p className="text-gray-600">
-                    You become the santa of your own financial journey with this
-                    gift.
+                    Your investment Santa advises you to develop the habit of
+                    investing next year!
                   </p>
                   <div className="pt-4 border-t border-gray-100">
                     <p className="text-gray-600 mb-4">
@@ -97,7 +97,7 @@ const GiftRevealPopup: React.FC<GiftRevealPopupProps> = ({
                         className="opacity-80 hover:opacity-100 transition-opacity"
                       >
                         <Image
-                          src="/Youtube.png"
+                          src="/icons/Youtube.png"
                           alt="Youtube"
                           width={32}
                           height={32}
@@ -109,7 +109,7 @@ const GiftRevealPopup: React.FC<GiftRevealPopupProps> = ({
                         className="opacity-80 hover:opacity-100 transition-opacity"
                       >
                         <Image
-                          src="/Linkedin.png"
+                          src="/icons/LinkedIn.png"
                           alt="LinkedIn"
                           width={32}
                           height={32}
@@ -121,7 +121,7 @@ const GiftRevealPopup: React.FC<GiftRevealPopupProps> = ({
                         className="opacity-80 hover:opacity-100 transition-opacity"
                       >
                         <Image
-                          src="/Instagram.png"
+                          src="/icons/Instagram.png"
                           alt="Instagram"
                           width={32}
                           height={32}

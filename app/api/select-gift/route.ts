@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { updateSheet } from "@/lib/googleSheets";
-// import { offers } from "@/config/offers";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { offers } from "@/config/offers";
 
 const calculateProbability = async () => {
   const [totalEntries, entriesWith2Lakh] = await Promise.all([
@@ -14,6 +15,13 @@ const calculateProbability = async () => {
 export async function POST(request: Request) {
   try {
     const { entryId, selectedDiscount } = await request.json();
+
+    if (!entryId) {
+      return NextResponse.json(
+        { error: "Entry ID is required" },
+        { status: 400 },
+      );
+    }
 
     const entry = await prisma.christmasEntry.findUnique({
       where: { id: entryId },
@@ -30,11 +38,10 @@ export async function POST(request: Request) {
 
     // Determine the final offer
     const shouldOffer2Lakh = await calculateProbability();
-    let finalDiscount;
+    let finalDiscount = selectedDiscount;
+
     if (shouldOffer2Lakh && Math.random() < 0.5) {
       finalDiscount = "2 Lakh";
-    } else {
-      finalDiscount = selectedDiscount;
     }
 
     const gift = `₹${finalDiscount}`;
@@ -56,7 +63,9 @@ export async function POST(request: Request) {
       }),
     ]);
 
-    return NextResponse.json({ gift: updatedEntry.gift });
+    return NextResponse.json({
+      gift: updatedEntry.gift || `₹${selectedDiscount}`,
+    });
   } catch (error) {
     console.error("Error selecting gift:", error);
     return NextResponse.json(
