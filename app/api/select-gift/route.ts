@@ -14,7 +14,9 @@ const calculateProbability = async () => {
 
 export async function POST(request: Request) {
   try {
-    const { entryId, selectedDiscount } = await request.json();
+    const body = await request.json();
+    const entryId = body.entryId;
+    const selectedDiscount = body.selectedDiscount;
 
     if (!entryId) {
       return NextResponse.json(
@@ -38,7 +40,7 @@ export async function POST(request: Request) {
 
     // Determine the final offer
     const shouldOffer2Lakh = await calculateProbability();
-    let finalDiscount = selectedDiscount;
+    let finalDiscount = selectedDiscount || "1 Lakh"; // Fallback to "1 Lakh" if selectedDiscount is undefined
 
     if (shouldOffer2Lakh && Math.random() < 0.5) {
       finalDiscount = "2 Lakh";
@@ -63,9 +65,7 @@ export async function POST(request: Request) {
       }),
     ]);
 
-    return NextResponse.json({
-      gift: updatedEntry.gift || `₹${selectedDiscount}`,
-    });
+    return NextResponse.json({ gift: updatedEntry.gift });
   } catch (error) {
     console.error("Error selecting gift:", error);
     return NextResponse.json(
